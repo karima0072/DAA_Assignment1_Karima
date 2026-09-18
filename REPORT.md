@@ -233,22 +233,29 @@ The experimental results support the theoretical complexity, but a finite benchm
 
 ## 9. Experimental Θ Bounds
 
-The theoretical definition of Θ is:
+The definition of Θ is:
 
 c1 * g(n) <= f(n) <= c2 * g(n)
 
 for all n >= n0.
 
-In this experiment, the measured ratios can be used to estimate the constants.
+The experimental constants were estimated from the measured comparison ratios in results.csv. For MergeSort and QuickSort, the ratio is comparisons / (n * log2(n)). For QuickSelect, the ratio is comparisons / n.
 
-For MergeSort, the ratio comparisons / (n log2(n)) stays close to a constant range for the tested input sizes. Therefore, we can choose rough lower and upper constants based on the minimum and maximum measured ratios after the small input sizes.
+Using the measurements with n >= 10,000, the following rough experimental bounds were obtained:
 
-For QuickSort, the range is wider because the pivot is random. The measured values still remain bounded for the tested input sizes.
+| Algorithm | Ratio | c1 | c2 | n0 |
+|---|---|---:|---:|---:|
+| MergeSort | comparisons / (n log2(n)) | 0.44 | 1.00 | 10,000 |
+| QuickSort | comparisons / (n log2(n)) | 0.16 | 1.28 | 10,000 |
+| QuickSelect | comparisons / n | 1.72 | 3.68 | 10,000 |
 
-For QuickSelect, the ratio comparisons / n is also bounded for the tested data, although it has more variation.
+For MergeSort, the measured ratios after n = 10,000 stay approximately between 0.44 and 1.00. Therefore, the experimental data supports a Θ(n log n) comparison count.
 
-The values of c1, c2 and n0 are therefore experimental estimates rather than mathematical constants. They depend on the input data and the particular benchmark run.
+For QuickSort, the ratio varies more because the pivot is selected randomly. The measured values after n = 10,000 are approximately between 0.16 and 1.28. The ratio does not systematically grow with n, which supports the expected average Θ(n log n) behavior.
 
+For QuickSelect, the ratio comparisons / n stays approximately between 1.72 and 3.68 for n >= 10,000. This supports the expected average Θ(n) behavior.
+
+These values are rough experimental estimates based on the collected benchmark data. They do not mathematically prove a Θ bound for every possible input size. They only show that the measured ratios become bounded and relatively stable for the tested large inputs.
 ## 10. Discussion
 
 The benchmark results generally match the theoretical behavior of the algorithms. MergeSort provides stable performance because it always divides the input into two approximately equal parts. QuickSort shows more variation because the pivot is chosen randomly. The three-way partition makes QuickSort efficient when the input contains many duplicate values. QuickSelect is usually faster than a full sorting algorithm because it only processes one side of the partition. The recursion depth of QuickSort stays relatively small because the algorithm recursively processes the smaller side and uses a loop for the larger side. JVM warm-up can affect the first benchmark runs because Java uses JIT compilation to optimize frequently executed code. Garbage collection can also create small differences between measurements. CPU cache behavior can influence the execution time for different array sizes. The 15-element cutoff in MergeSort can improve practical performance because Insertion Sort is efficient for small arrays.
